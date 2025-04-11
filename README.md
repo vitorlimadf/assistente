@@ -1,4 +1,4 @@
-# Assistente Pessoal com Ollama, LangGraph e Streamlit
+# Assistente Pessoal com Ollama, OpenRouter, LangGraph e Streamlit
 
 Este projeto implementa um assistente pessoal de linguagem natural que roda localmente, combinando:
 
@@ -23,8 +23,8 @@ Este projeto implementa um assistente pessoal de linguagem natural que roda loca
 ### 1. Clone este repositório
 
 ```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+git clone https://github.com/vitorlimadf/assistente.git
+cd assistente
 ```
 
 ### 2. Crie e ative um ambiente virtual
