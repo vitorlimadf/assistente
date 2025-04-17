@@ -1,3 +1,6 @@
 .env
 funcs.py
 .venv/
+token_cache.json
+__pycache__/
+.webui_secret_key

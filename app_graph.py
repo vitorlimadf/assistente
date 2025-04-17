@@ -3,7 +3,8 @@ from agente_graph import generate_thread_id,chatbot
 import asyncio
 
 
-st.title("Teste sua RAG")
+st.title("Assistente Virtual - Chatbot")
+
 
 # desloca o container do User um pouco pra direita, similar ao ChatGPT
 st.html("<style>.st-emotion-cache-janbn0 {margin-left: 100px;}</style>")

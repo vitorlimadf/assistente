@@ -1,40 +1,48 @@
 import os
-import requests
-from datetime import datetime, timedelta
+import msal
+from dotenv import load_dotenv
+
+# Carrega variáveis do .env
+load_dotenv()
 
 class TokenManager:
-    def __init__(self):
-        self.tenant_id = os.getenv("TENANT_ID")
+    def __init__(self, cache_path="token_cache.json"):
         self.client_id = os.getenv("CLIENT_ID")
-        self.client_secret = os.getenv("CLIENT_SECRET")
-        self.refresh_token = os.getenv("REFRESH_TOKEN")  # opcional, se quiser carregar no boot
-        self.token_url = f"https://login.microsoftonline.com/{self.tenant_id}/oauth2/v2.0/token"
-        self.access_token = None
-        self.expires_at = None
+        self.tenant_id = os.getenv("TENANT_ID")
+        self.scope = ["User.Read"]
+        self.authority = f"https://login.microsoftonline.com/{self.tenant_id}"
+        self.scope = ["https://graph.microsoft.com/.default"]
+
+        # Cache persistente
+        self.cache_path = cache_path
+        self.token_cache = msal.SerializableTokenCache()
+
+        if os.path.exists(self.cache_path):
+            self.token_cache.deserialize(open(self.cache_path, "r").read())
+
+        self.app = msal.PublicClientApplication(
+            client_id=self.client_id,
+            authority=self.authority,
+            token_cache=self.token_cache
+        )
+
+    def persist_cache(self):
+        if self.token_cache.has_state_changed:
+            with open(self.cache_path, "w") as f:
+                f.write(self.token_cache.serialize())
 
     def get_access_token(self):
-        if self.access_token and datetime.utcnow() < self.expires_at:
-            return self.access_token
-        elif self.refresh_token:
-            return self.refresh_access_token()
-        else:
-            raise RuntimeError("⚠️ Token expirado e nenhum refresh_token disponível.")
+        accounts = self.app.get_accounts()
+        result = None
 
-    def refresh_access_token(self):
-        data = {
-            "grant_type": "refresh_token",
-            "refresh_token": self.refresh_token,
-            "client_id": self.client_id,
-            "client_secret": self.client_secret,
-            "scope": "https://graph.microsoft.com/.default"
-        }
+        if accounts:
+            result = self.app.acquire_token_silent(self.scope, account=accounts[0])
 
-        response = requests.post(self.token_url, data=data)
-        if response.status_code == 200:
-            token_data = response.json()
-            self.access_token = token_data["access_token"]
-            self.refresh_token = token_data.get("refresh_token", self.refresh_token)
-            self.expires_at = datetime.utcnow() + timedelta(seconds=token_data["expires_in"])
-            return self.access_token
-        else:
-            raise RuntimeError(f"Erro ao renovar token: {response.status_code} - {response.text}")
+        if not result:
+            result = self.app.acquire_token_interactive(scopes=self.scope)
+
+        if "access_token" in result:
+            self.persist_cache()
+            return result["access_token"]
+
+        raise RuntimeError(f"Erro ao obter token: {result.get('error_description')}")
