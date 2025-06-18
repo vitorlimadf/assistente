@@ -16,7 +16,7 @@
             "name": "Streamlit: Run App",
             "type": "debugpy",
             "request": "launch",
-            "program": "C:\\Users\\Bacen\\Documents\\git\\assistente\\.venv\\Scripts\\streamlit.exe", 
+            "program": "C:\\Users\\vitor\\AppData\\Local\\Programs\\Python\\Python311\\Scripts\\streamlit.exe", 
             "console": "integratedTerminal",
             "args": [
                 "run",
