@@ -7,7 +7,10 @@ st.title("Assistente Virtual - Chatbot")
 
 
 # desloca o container do User um pouco pra direita, similar ao ChatGPT
-st.html("<style>.st-emotion-cache-janbn0 {margin-left: 100px;}</style>")
+st.markdown(
+    "<style>.st-emotion-cache-janbn0 {margin-left: 100px;}</style>",
+    unsafe_allow_html=True,
+)
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
