@@ -112,7 +112,7 @@ from langchain_ollama import ChatOllama
 ---
 
 
-TODO: Atualizar com informações de como connectar ao e-mail
+TODO: Atualizar com informações de como conectar ao e-mail
 
 ## Executando os Testes
 
