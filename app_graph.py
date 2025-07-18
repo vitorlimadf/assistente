@@ -1,5 +1,10 @@
 import streamlit as st
-from agente_graph import generate_thread_id,chatbot
+from agente_graph import generate_thread_id, chatbot
+from conversation_storage import (
+    save_conversation,
+    load_conversation,
+    list_conversations,
+)
 import asyncio
 
 
@@ -15,9 +20,23 @@ st.markdown(
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-#verifica se existe um uid de sessão
+# verifica se existe um uid de sessão
 if "uid" not in st.session_state:
     st.session_state.uid = generate_thread_id()
+
+with st.sidebar:
+    st.header("Conversas")
+    for tid, updated in list_conversations():
+        label = updated.split("T")[0] if updated else tid[:8]
+        if st.button(label, key=f"conv-{tid}"):
+            st.session_state.messages = load_conversation(tid)
+            st.session_state.uid = tid
+            st.rerun()
+
+    if st.button("Nova conversa"):
+        st.session_state.messages = []
+        st.session_state.uid = generate_thread_id()
+        st.rerun()
 
 
 def print_sources(sources):
@@ -75,6 +94,7 @@ if prompt := st.chat_input("De que você precisa?"):
     #    print_sources(sources)
 
     st.session_state.messages.append({"role": "assistant", "content": text_response, "sources": sources})
+    save_conversation(st.session_state.uid, st.session_state.messages)
 
 
 async def get_response():
