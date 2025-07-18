@@ -75,7 +75,7 @@ Na maioria dos casos, isso ocorre automaticamente em segundo plano.
 ### 2. Execute a interface web
 
 ```bash
-streamlit run app.py
+streamlit run app_graph.py
 ```
 
 Acesse via navegador em [http://localhost:8501](http://localhost:8501)
