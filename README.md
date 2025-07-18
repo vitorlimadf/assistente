@@ -114,6 +114,15 @@ from langchain_ollama import ChatOllama
 
 TODO: Atualizar com informações de como connectar ao e-mail
 
+## Executando os Testes
+
+Para garantir que tudo está funcionando corretamente, rode a suíte de testes:
+
+```bash
+pip install pytest
+pytest
+```
+
 ## Licença
 
 Este projeto é open-source e pode ser utilizado, modificado e redistribuído livremente, conforme os termos da licença incluída no repositório.
