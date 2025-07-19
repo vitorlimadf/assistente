@@ -59,7 +59,8 @@ with st.sidebar:
 
     for tid, title in convs:
         st.markdown("<div class='conv-row'>", unsafe_allow_html=True)
-        row = st.columns([0.88, 0.12], gap="0")
+        # use a small gap since Streamlit only accepts "small", "medium" or "large"
+        row = st.columns([0.88, 0.12], gap="small")
         label = title if title else tid[:8]
         if row[0].button(label, key=f"conv-{tid}", use_container_width=True):
             st.session_state.messages = load_conversation(tid)
