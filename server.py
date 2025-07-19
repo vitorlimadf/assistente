@@ -12,8 +12,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
-
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -40,3 +38,6 @@ async def websocket_endpoint(websocket: WebSocket):
                 await websocket.send_json({"type": "history", "messages": messages})
     except WebSocketDisconnect:
         pass
+
+
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
