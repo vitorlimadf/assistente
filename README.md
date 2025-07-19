@@ -95,6 +95,15 @@ Acesse via navegador em [http://localhost:8501](http://localhost:8501)
 
 ---
 
+## Banco de Dados Local
+
+As conversas agora são armazenadas em um arquivo SQLite (`conversations.db`)
+na raiz do projeto. O banco é criado automaticamente na primeira execução.
+Caso queira utilizar outro caminho, altere a constante `DB_PATH` em
+`conversation_storage.py`.
+
+---
+
 ## Observações Técnicas
 
 A classe `ChatOllama` foi migrada para o pacote `langchain-ollama`. Para evitar avisos de depreciação:
