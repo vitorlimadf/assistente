@@ -159,13 +159,19 @@ components.html(
             micBtn.id = 'mic-btn';
             micBtn.type = 'button';
             micBtn.textContent = '🎤';
-            micBtn.style.marginRight = '0.25rem';
             micBtn.style.background = 'transparent';
             micBtn.style.border = 'none';
             micBtn.style.cursor = 'pointer';
             micBtn.style.fontSize = sendBtn.style.fontSize || '1.1rem';
+            micBtn.style.position = 'absolute';
+            micBtn.style.bottom = sendBtn.style.bottom || '0';
+            micBtn.style.zIndex = '1';
+            sendBtn.parentElement.style.position = 'relative';
             sendBtn.parentElement.insertBefore(micBtn, sendBtn);
         }
+        const gap = 8; // px
+        const btnWidth = sendBtn.offsetWidth || 32;
+        micBtn.style.right = (btnWidth + gap) + 'px';
 
         if (SpeechRecognition) {
             if (!micBtn.recog) {
