@@ -106,8 +106,9 @@ Os títulos das conversas são gerados automaticamente pela IA na primeira
 resposta. Na barra lateral você pode pesquisar pelos títulos para localizar
 conversas antigas com mais facilidade.
 
-Para renomear ou excluir uma conversa, clique no botão com três pontinhos ao
-lado do título correspondente na barra lateral.
+Para renomear ou excluir uma conversa, clique nos três pontinhos **dentro** do
+botão da conversa na barra lateral. Um menu suspenso será exibido com as opções
+"Editar" (renomear) e "Excluir".
 
 ---
 

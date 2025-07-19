@@ -37,33 +37,26 @@ with st.sidebar:
         if not search or search.lower() in (title or "").lower()
     ]
     for tid, title in convs:
-        cols = st.columns([0.85, 0.15])
+        cols = st.columns([0.9, 0.1])
         label = title if title else tid[:8]
-        if cols[0].button(label, key=f"conv-{tid}"):
+        if cols[0].button(label, key=f"conv-{tid}", use_container_width=True):
             st.session_state.messages = load_conversation(tid)
             st.session_state.uid = tid
             st.session_state.title = title
             st.rerun()
-        if cols[1].button("\u22ee", key=f"menu-btn-{tid}"):
-            current = st.session_state.get("menu_open")
-            st.session_state.menu_open = None if current == tid else tid
-            st.rerun()
-        if st.session_state.get("menu_open") == tid:
-            new_title = st.text_input("Novo título", key=f"rename-{tid}")
-            b1, b2 = st.columns(2)
-            if b1.button("Renomear", key=f"btn-rename-{tid}") and new_title:
+        with cols[1].popover("\u22ee", key=f"menu-{tid}"):
+            new_title = st.text_input("Novo título", value=title or "", key=f"rename-{tid}")
+            if st.button("Renomear", key=f"btn-rename-{tid}") and new_title:
                 rename_conversation(tid, new_title)
                 if st.session_state.uid == tid:
                     st.session_state.title = new_title
-                st.session_state.menu_open = None
                 st.rerun()
-            if b2.button("Excluir", key=f"btn-del-{tid}"):
+            if st.button("Excluir", key=f"btn-del-{tid}"):
                 delete_conversation(tid)
                 if st.session_state.uid == tid:
                     st.session_state.messages = []
                     st.session_state.uid = generate_thread_id()
                     st.session_state.title = None
-                st.session_state.menu_open = None
                 st.rerun()
 
     st.divider()
