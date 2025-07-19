@@ -80,6 +80,12 @@ streamlit run app_graph.py
 
 Acesse via navegador em [http://localhost:8501](http://localhost:8501)
 
+### 3. Modo voz (opcional)
+
+Execute `python voice_chat.py` para uma experiência totalmente falada.
+O script grava sua fala, envia para o assistente e reproduz a resposta em voz alta.
+
+
 ---
 
 ## Estrutura do Projeto
