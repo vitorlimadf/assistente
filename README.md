@@ -95,6 +95,25 @@ Acesse via navegador em [http://localhost:8501](http://localhost:8501)
 
 ---
 
+## Banco de Dados Local
+
+As conversas agora são armazenadas em um arquivo SQLite (`conversations.db`)
+na raiz do projeto. O banco é criado automaticamente na primeira execução.
+Caso queira utilizar outro caminho, altere a constante `DB_PATH` em
+`conversation_storage.py`.
+
+Os títulos das conversas são gerados automaticamente pela IA na primeira
+resposta. Na barra lateral você pode pesquisar pelos títulos para localizar
+conversas antigas com mais facilidade.
+
+Para renomear ou excluir uma conversa, utilize o botão de três pontinhos (⋯)
+alinhado à direita do título da conversa na barra lateral. Após clicar nesse
+botão, um pequeno menu é exibido com as opções **Renomear** e **Excluir**. Ao
+escolher "Renomear", aparece um campo de texto para definir o novo título; já
+"Excluir" requer uma confirmação antes de remover o chat da lista.
+
+---
+
 ## Observações Técnicas
 
 A classe `ChatOllama` foi migrada para o pacote `langchain-ollama`. Para evitar avisos de depreciação:
