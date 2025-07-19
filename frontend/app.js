@@ -7,6 +7,7 @@ function ChatApp() {
   const [search, setSearch] = useState("");
   const [active, setActive] = useState(null);
   const [recording, setRecording] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);
 
   const wsRef = useRef(null);
   const recRef = useRef(null);
@@ -108,7 +109,11 @@ function ChatApp() {
 
   return (
     React.createElement('div', { className: 'sidebar-chat' },
-      React.createElement('div', { className: 'sidebar' },
+      showSidebar && React.createElement('div', { className: 'sidebar' },
+        React.createElement('button', {
+          className: 'toggle-sidebar',
+          onClick: () => setShowSidebar(false)
+        }, '⮜'),
         React.createElement('input', {
           placeholder: 'Buscar...',
           value: search,
@@ -130,6 +135,10 @@ function ChatApp() {
         React.createElement('div', { className: 'conv-item', onClick: newConversation }, '+ Nova conversa')
       ),
       React.createElement('div', { className: 'chat-main' },
+        !showSidebar && React.createElement('button', {
+          className: 'toggle-sidebar show-sidebar',
+          onClick: () => setShowSidebar(true)
+        }, '☰'),
         React.createElement('div', { className: 'messages' },
           messages.map((m,i) =>
             React.createElement('div', { key: i, className: `msg ${m.role}` }, m.content)
