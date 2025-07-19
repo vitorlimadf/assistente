@@ -131,6 +131,9 @@ E utilize:
 from langchain_ollama import ChatOllama
 ```
 
+A interface web possui um botão de microfone para ditar perguntas por voz. A
+fala é transcrita automaticamente antes do envio ao assistente.
+
 ---
 
 
