@@ -1,11 +1,12 @@
-# Assistente Pessoal com Ollama, OpenRouter, LangGraph e Streamlit
+# Assistente Pessoal com Ollama, OpenRouter, LangGraph, FastAPI e React
 
 Este projeto implementa um assistente pessoal de linguagem natural que roda localmente, combinando:
 
 - [LangGraph](https://github.com/langchain-ai/langgraph) para orquestração de agentes
 - [LangChain](https://github.com/langchain-ai/langchain) para ferramentas, memória e integração
 - [Ollama](https://ollama.com) para execução local de modelos de linguagem (LLMs)
-- [Streamlit](https://streamlit.io/) para interface web simples e leve
+- [FastAPI](https://fastapi.tiangolo.com/) servindo uma API e WebSocket
+- [React](https://react.dev/) para a interface web moderna
 - [OpenRouter](https://openrouter.ai/) adicionado posteriormente para casos de limitação de hardware
 
 ---
@@ -72,13 +73,13 @@ ollama serve
 
 Na maioria dos casos, isso ocorre automaticamente em segundo plano.
 
-### 2. Execute a interface web
+### 2. Inicie a API com FastAPI
 
 ```bash
-streamlit run app_graph.py
+uvicorn server:app --reload
 ```
 
-Acesse via navegador em [http://localhost:8501](http://localhost:8501)
+Abra o navegador em [http://localhost:8000](http://localhost:8000). O front-end React é servido diretamente pela aplicação.
 
 ---
 
@@ -86,7 +87,8 @@ Acesse via navegador em [http://localhost:8501](http://localhost:8501)
 
 ```
 📁 seu-repositorio/
-├── app_graph.py         # Interface web com Streamlit
+├── server.py            # API FastAPI com WebSocket
+├── frontend/            # Aplicação React
 ├── agente_graph.py      # Lógica do agente com LangGraph + Ollama + OpenRouter
 ├── token_manager        # gerenciamento de tokens de acesso para conectar ao e-mail
 ├── requirements.txt     # Dependências do projeto
