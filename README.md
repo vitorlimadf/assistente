@@ -106,7 +106,8 @@ Os títulos das conversas são gerados automaticamente pela IA na primeira
 resposta. Na barra lateral você pode pesquisar pelos títulos para localizar
 conversas antigas com mais facilidade.
 
-Também é possível renomear ou excluir conversas existentes pelo menu lateral.
+Para renomear ou excluir uma conversa, clique no botão com três pontinhos ao
+lado do título correspondente na barra lateral.
 
 ---
 

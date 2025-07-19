@@ -37,39 +37,41 @@ with st.sidebar:
         if not search or search.lower() in (title or "").lower()
     ]
     for tid, title in convs:
+        cols = st.columns([0.85, 0.15])
         label = title if title else tid[:8]
-        if st.button(label, key=f"conv-{tid}"):
+        if cols[0].button(label, key=f"conv-{tid}"):
             st.session_state.messages = load_conversation(tid)
             st.session_state.uid = tid
             st.session_state.title = title
             st.rerun()
-
-    if st.button("Nova conversa"):
-        st.session_state.messages = []
-        st.session_state.uid = generate_thread_id()
-        st.session_state.title = None
-        st.rerun()
-
-    st.divider()
-    if convs:
-        options = {f"{title or tid[:8]} ({tid[:8]})": tid for tid, title in convs}
-        label = st.selectbox("Selecionar para editar", [""] + list(options.keys()))
-        if label:
-            tid = options[label]
+        if cols[1].button("\u22ee", key=f"menu-btn-{tid}"):
+            current = st.session_state.get("menu_open")
+            st.session_state.menu_open = None if current == tid else tid
+            st.rerun()
+        if st.session_state.get("menu_open") == tid:
             new_title = st.text_input("Novo título", key=f"rename-{tid}")
-            cols = st.columns(2)
-            if cols[0].button("Renomear", key=f"btn-rename-{tid}") and new_title:
+            b1, b2 = st.columns(2)
+            if b1.button("Renomear", key=f"btn-rename-{tid}") and new_title:
                 rename_conversation(tid, new_title)
                 if st.session_state.uid == tid:
                     st.session_state.title = new_title
+                st.session_state.menu_open = None
                 st.rerun()
-            if cols[1].button("Excluir", key=f"btn-del-{tid}"):
+            if b2.button("Excluir", key=f"btn-del-{tid}"):
                 delete_conversation(tid)
                 if st.session_state.uid == tid:
                     st.session_state.messages = []
                     st.session_state.uid = generate_thread_id()
                     st.session_state.title = None
+                st.session_state.menu_open = None
                 st.rerun()
+
+    st.divider()
+    if st.button("Nova conversa"):
+        st.session_state.messages = []
+        st.session_state.uid = generate_thread_id()
+        st.session_state.title = None
+        st.rerun()
 
 
 def print_sources(sources):
@@ -134,18 +136,3 @@ if prompt := st.chat_input("De que você precisa?"):
         st.session_state.messages,
         title=st.session_state.title,
     )
-
-
-async def get_response():
-    sources = []
-    text_response = ''
-    response_container = st.empty()
-
-    async for chunk in message_stream:
-        if isinstance(chunk, list):
-            sources = chunk
-        else:
-            text_response += chunk
-            response_container.write(text_response)
-
-    print_sources(sources)
