@@ -153,28 +153,37 @@ components.html(
         const sendBtn = container.querySelector('button');
         if (!sendBtn) { return; }
 
-        if (!parent.document.getElementById('mic-btn')) {
-            const micBtn = document.createElement('button');
+        let micBtn = parent.document.getElementById('mic-btn');
+        if (!micBtn) {
+            micBtn = document.createElement('button');
             micBtn.id = 'mic-btn';
             micBtn.type = 'button';
             micBtn.textContent = '🎤';
-            micBtn.style.marginLeft = '0.25rem';
+            micBtn.style.marginRight = '0.25rem';
+            micBtn.style.background = 'transparent';
+            micBtn.style.border = 'none';
+            micBtn.style.cursor = 'pointer';
+            micBtn.style.fontSize = sendBtn.style.fontSize || '1.1rem';
             sendBtn.parentElement.insertBefore(micBtn, sendBtn);
+        }
 
-            if (SpeechRecognition) {
+        if (SpeechRecognition) {
+            if (!micBtn.recog) {
                 const recog = new SpeechRecognition();
                 recog.lang = 'pt-BR';
-                micBtn.onclick = () => recog.start();
-                recog.onresult = (e) => {
+                micBtn.addEventListener('click', () => recog.start());
+                recog.addEventListener('result', (e) => {
                     const text = e.results[0][0].transcript;
                     const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value').set;
                     setter.call(input, input.value + text);
                     input.dispatchEvent(new Event('input', { bubbles: true }));
                     input.dispatchEvent(new Event('change', { bubbles: true }));
-                };
-            } else {
-                micBtn.disabled = true;
+                });
+                micBtn.recog = recog;
             }
+            micBtn.disabled = false;
+        } else {
+            micBtn.disabled = true;
         }
     }
 
