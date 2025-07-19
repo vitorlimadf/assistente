@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from agente_graph import (
     generate_thread_id,
     chatbot,
@@ -139,6 +140,66 @@ for message in st.session_state.messages:
 
         sources = message.get("sources")
         print_sources(sources)
+
+components.html(
+    """
+    <script>
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    function ensureMic() {
+        const input = parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
+        if (!input) { return; }
+        const container = input.closest('div[data-testid="stChatInput"]') || input.parentElement;
+        const sendBtn = container.querySelector('button');
+        if (!sendBtn) { return; }
+
+        let micBtn = parent.document.getElementById('mic-btn');
+        if (!micBtn) {
+            micBtn = document.createElement('button');
+            micBtn.id = 'mic-btn';
+            micBtn.type = 'button';
+            micBtn.textContent = '🎤';
+            micBtn.style.background = 'transparent';
+            micBtn.style.border = 'none';
+            micBtn.style.cursor = 'pointer';
+            micBtn.style.fontSize = sendBtn.style.fontSize || '1.1rem';
+            micBtn.style.position = 'absolute';
+            micBtn.style.bottom = sendBtn.style.bottom || '0';
+            micBtn.style.zIndex = '1';
+            sendBtn.parentElement.style.position = 'relative';
+            sendBtn.parentElement.insertBefore(micBtn, sendBtn);
+        }
+        const gap = 8; // px
+        const btnWidth = sendBtn.offsetWidth || 32;
+        micBtn.style.right = (btnWidth + gap) + 'px';
+
+        if (SpeechRecognition) {
+            if (!micBtn.recog) {
+                const recog = new SpeechRecognition();
+                recog.lang = 'pt-BR';
+                micBtn.addEventListener('click', () => recog.start());
+                recog.addEventListener('result', (e) => {
+                    const text = e.results[0][0].transcript;
+                    const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value').set;
+                    setter.call(input, input.value + text);
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+                micBtn.recog = recog;
+            }
+            micBtn.disabled = false;
+        } else {
+            micBtn.disabled = true;
+        }
+    }
+
+    // Try to add the button now and whenever Streamlit rerenders
+    ensureMic();
+    setInterval(ensureMic, 1000);
+    </script>
+    """,
+    height=0,
+)
 
 if prompt := st.chat_input("De que você precisa?"):
     # user_details = get_authenticated_user_details()

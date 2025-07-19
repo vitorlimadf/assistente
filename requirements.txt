@@ -93,3 +93,7 @@ watchdog==6.0.0
 xxhash==3.5.0
 yarl==1.19.0
 zstandard==0.23.0
+
+SpeechRecognition==3.10.0
+pyttsx3==2.90
+PyAudio==0.2.14

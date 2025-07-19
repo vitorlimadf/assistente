@@ -80,6 +80,19 @@ streamlit run app_graph.py
 
 Acesse via navegador em [http://localhost:8501](http://localhost:8501)
 
+Na interface há um ícone de microfone, posicionado ao lado do botão de enviar.
+Clique nesse ícone para ditar sua pergunta. O texto reconhecido será somado ao
+conteúdo já existente no campo de mensagem, permitindo revisar ou editar antes
+de enviar.
+
+### 3. Modo voz (opcional)
+
+Execute `python voice_chat.py` para uma experiência totalmente falada.
+Esse modo utiliza `SpeechRecognition`, `pyttsx3` e `PyAudio` para capturar e
+reproduzir sua voz. O script grava sua fala, envia para o assistente e reproduz
+a resposta em voz alta.
+
+
 ---
 
 ## Estrutura do Projeto
