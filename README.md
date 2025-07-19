@@ -80,9 +80,10 @@ streamlit run app_graph.py
 
 Acesse via navegador em [http://localhost:8501](http://localhost:8501)
 
-Na interface há um ícone de microfone ao lado do botão de enviar. Clique nele
-para converter sua fala em texto que será preenchido no campo de mensagem,
-permitindo revisar ou editar antes de enviar.
+Na interface há um ícone de microfone, posicionado ao lado do botão de enviar.
+Clique nesse ícone para ditar sua pergunta. O texto reconhecido será somado ao
+conteúdo já existente no campo de mensagem, permitindo revisar ou editar antes
+de enviar.
 
 ### 3. Modo voz (opcional)
 
