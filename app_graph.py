@@ -44,7 +44,7 @@ with st.sidebar:
             st.session_state.uid = tid
             st.session_state.title = title
             st.rerun()
-        with cols[1].popover("\u22ee", key=f"menu-{tid}"):
+        with cols[1].popover("\u22ee"):
             new_title = st.text_input("Novo título", value=title or "", key=f"rename-{tid}")
             if st.button("Renomear", key=f"btn-rename-{tid}") and new_title:
                 rename_conversation(tid, new_title)
