@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from agente_graph import (
     generate_thread_id,
     chatbot,
@@ -139,6 +140,33 @@ for message in st.session_state.messages:
 
         sources = message.get("sources")
         print_sources(sources)
+
+components.html(
+    """
+    <button id='voice-btn'>🎤 Perguntar por voz</button>
+    <script>
+    const btn = document.getElementById('voice-btn');
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+        const recog = new SpeechRecognition();
+        recog.lang = 'pt-BR';
+        btn.onclick = () => recog.start();
+        recog.onresult = (e) => {
+            const text = e.results[0][0].transcript;
+            const input = parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
+            if (input) {
+                input.value = text;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        };
+    } else {
+        btn.disabled = true;
+        btn.innerText = 'Sem suporte de voz';
+    }
+    </script>
+    """,
+    height=40,
+)
 
 if prompt := st.chat_input("De que você precisa?"):
     # user_details = get_authenticated_user_details()

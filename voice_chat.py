@@ -4,15 +4,18 @@ import pyttsx3
 from agente_graph import generate_thread_id, chatbot, generate_conversation_title
 from conversation_storage import save_conversation
 
+# initialize engines once to avoid delays on every utterance
+recognizer = sr.Recognizer()
+tts_engine = pyttsx3.init()
+
 
 def speak(text: str) -> None:
-    """Speak text using the system TTS engine."""
-    engine = pyttsx3.init()
-    engine.say(text)
-    engine.runAndWait()
+    """Speak text using the system TTS engine (pyttsx3)."""
+    tts_engine.say(text)
+    tts_engine.runAndWait()
 
 
-def listen(recognizer: sr.Recognizer) -> str:
+def listen() -> str:
     """Capture audio from the microphone and return recognized text."""
     with sr.Microphone() as source:
         print("Fale algo...")
@@ -28,14 +31,14 @@ def listen(recognizer: sr.Recognizer) -> str:
 
 
 def main() -> None:
-    recognizer = sr.Recognizer()
+    """Run a voice-only chat session on the command line."""
     thread_id = generate_thread_id()
     messages = []
 
     print("Assistente de voz iniciado. Pressione Ctrl+C para sair.")
     while True:
         try:
-            text = listen(recognizer)
+            text = listen()
             if not text:
                 continue
             messages.append({"role": "user", "content": text})

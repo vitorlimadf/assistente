@@ -80,10 +80,16 @@ streamlit run app_graph.py
 
 Acesse via navegador em [http://localhost:8501](http://localhost:8501)
 
+Na interface há um botão **Perguntar por voz** logo abaixo do histórico. Ao
+clicar nele, sua fala é convertida em texto que preenche o campo de mensagem
+para você revisar ou editar antes de enviar.
+
 ### 3. Modo voz (opcional)
 
 Execute `python voice_chat.py` para uma experiência totalmente falada.
-O script grava sua fala, envia para o assistente e reproduz a resposta em voz alta.
+Esse modo utiliza `SpeechRecognition`, `pyttsx3` e `PyAudio` para capturar e
+reproduzir sua voz. O script grava sua fala, envia para o assistente e reproduz
+a resposta em voz alta.
 
 
 ---
