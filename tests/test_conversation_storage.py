@@ -16,9 +16,9 @@ def test_save_and_load(tmp_path, monkeypatch):
     tid = "thread1"
     messages = [{"role": "user", "content": "oi"}]
 
-    save_conversation(tid, messages, db_path=str(path))
+    save_conversation(tid, messages, title="titulo", db_path=str(path))
     assert load_conversation(tid, db_path=str(path)) == messages
 
     convs = list_conversations(db_path=str(path))
-    assert convs and convs[0][0] == tid
+    assert convs and convs[0] == (tid, "titulo")
 

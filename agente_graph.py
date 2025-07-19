@@ -69,6 +69,16 @@ def count_tokens(message, model_name="gpt-4"):
 def generate_thread_id():
     return str(uuid.uuid4())
 
+
+def generate_conversation_title(messages):
+    """Use the LLM to generate a short title for a conversation."""
+    prompt = (
+        "Resuma a conversa abaixo em um titulo curto (maximo 5 palavras).\n\n"
+    )
+    text = "\n".join(m["content"] for m in messages[-2:])
+    resp = chat.invoke([HumanMessage(content=prompt + text)])
+    return resp.content.strip()
+
 def get_current_datetime(args=None) -> datetime:
     current_date = datetime.now()
     print(f"📅 Data e hora atual: {current_date}")

@@ -1,5 +1,5 @@
 import streamlit as st
-from agente_graph import generate_thread_id, chatbot
+from agente_graph import generate_thread_id, chatbot, generate_conversation_title
 from conversation_storage import (
     save_conversation,
     load_conversation,
@@ -23,19 +23,26 @@ if "messages" not in st.session_state:
 # verifica se existe um uid de sessão
 if "uid" not in st.session_state:
     st.session_state.uid = generate_thread_id()
+if "title" not in st.session_state:
+    st.session_state.title = None
 
 with st.sidebar:
     st.header("Conversas")
-    for tid, updated in list_conversations():
-        label = updated.split("T")[0] if updated else tid[:8]
+    search = st.text_input("Buscar")
+    for tid, title in list_conversations():
+        if search and search.lower() not in (title or "").lower():
+            continue
+        label = title if title else tid[:8]
         if st.button(label, key=f"conv-{tid}"):
             st.session_state.messages = load_conversation(tid)
             st.session_state.uid = tid
+            st.session_state.title = title
             st.rerun()
 
     if st.button("Nova conversa"):
         st.session_state.messages = []
         st.session_state.uid = generate_thread_id()
+        st.session_state.title = None
         st.rerun()
 
 
@@ -94,7 +101,13 @@ if prompt := st.chat_input("De que você precisa?"):
     #    print_sources(sources)
 
     st.session_state.messages.append({"role": "assistant", "content": text_response, "sources": sources})
-    save_conversation(st.session_state.uid, st.session_state.messages)
+    if st.session_state.title is None and len(st.session_state.messages) >= 2:
+        st.session_state.title = generate_conversation_title(st.session_state.messages)
+    save_conversation(
+        st.session_state.uid,
+        st.session_state.messages,
+        title=st.session_state.title,
+    )
 
 
 async def get_response():

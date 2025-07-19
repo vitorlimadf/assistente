@@ -2,7 +2,7 @@ import sqlite3
 import json
 from datetime import datetime
 from contextlib import closing
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 DB_PATH = "conversations.db"
 
@@ -19,9 +19,15 @@ def _init_db(conn: sqlite3.Connection):
         conn.execute(
             """CREATE TABLE IF NOT EXISTS conversations (
             thread_id TEXT PRIMARY KEY,
-            updated_at TEXT
+            updated_at TEXT,
+            title TEXT
         )"""
         )
+        # if the table already existed without the title column, try to add it
+        try:
+            conn.execute("ALTER TABLE conversations ADD COLUMN title TEXT")
+        except sqlite3.OperationalError:
+            pass
         conn.execute(
             """CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,14 +42,25 @@ def _init_db(conn: sqlite3.Connection):
 
 
 
-def save_conversation(thread_id: str, messages: List[dict], db_path: str = DB_PATH):
+def save_conversation(
+    thread_id: str,
+    messages: List[dict],
+    *,
+    title: Optional[str] = None,
+    db_path: str = DB_PATH,
+):
     """Persist messages of a conversation."""
     now = datetime.now().isoformat()
     with closing(_get_conn(db_path)) as conn, conn:
         conn.execute(
-            "INSERT INTO conversations(thread_id, updated_at) VALUES(?, ?) "
-            "ON CONFLICT(thread_id) DO UPDATE SET updated_at=excluded.updated_at",
-            (thread_id, now),
+            "INSERT INTO conversations(thread_id, updated_at, title) VALUES(?, ?, ?) "
+            "ON CONFLICT(thread_id) DO UPDATE SET updated_at=excluded.updated_at, title=COALESCE(?, title)",
+            (
+                thread_id,
+                now,
+                title,
+                title,
+            ),
         )
         conn.execute("DELETE FROM messages WHERE thread_id=?", (thread_id,))
         for msg in messages:
@@ -78,9 +95,9 @@ def load_conversation(thread_id: str, db_path: str = DB_PATH) -> List[dict]:
 
 
 def list_conversations(db_path: str = DB_PATH) -> List[Tuple[str, str]]:
-    """List available conversations as (thread_id, updated_at)."""
+    """List available conversations as (thread_id, title)."""
     with closing(_get_conn(db_path)) as conn:
         rows = conn.execute(
-            "SELECT thread_id, updated_at FROM conversations ORDER BY updated_at DESC"
+            "SELECT thread_id, title FROM conversations ORDER BY updated_at DESC"
         ).fetchall()
-    return [(row["thread_id"], row["updated_at"]) for row in rows]
+    return [(row["thread_id"], row["title"] or "") for row in rows]

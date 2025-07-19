@@ -102,6 +102,10 @@ na raiz do projeto. O banco é criado automaticamente na primeira execução.
 Caso queira utilizar outro caminho, altere a constante `DB_PATH` em
 `conversation_storage.py`.
 
+Os títulos das conversas são gerados automaticamente pela IA na primeira
+resposta. Na barra lateral você pode pesquisar pelos títulos para localizar
+conversas antigas com mais facilidade.
+
 ---
 
 ## Observações Técnicas
