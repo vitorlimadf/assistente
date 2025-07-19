@@ -103,8 +103,9 @@ Caso queira utilizar outro caminho, altere a constante `DB_PATH` em
 `conversation_storage.py`.
 
 Os títulos das conversas são gerados automaticamente pela IA na primeira
-resposta. Na barra lateral você pode pesquisar pelos títulos para localizar
-conversas antigas com mais facilidade.
+resposta. Na barra lateral agora é possível pesquisar tanto pelos títulos
+quanto pelo conteúdo das mensagens para localizar conversas antigas com
+mais facilidade.
 
 Para renomear ou excluir uma conversa, utilize o botão de três pontinhos (⋯)
 alinhado à direita do título da conversa na barra lateral. Após clicar nesse

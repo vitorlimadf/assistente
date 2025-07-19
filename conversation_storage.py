@@ -103,6 +103,25 @@ def list_conversations(db_path: str = DB_PATH) -> List[Tuple[str, str]]:
     return [(row["thread_id"], row["title"] or "") for row in rows]
 
 
+def search_conversations(search: str, db_path: str = DB_PATH) -> List[Tuple[str, str]]:
+    """Search conversations by title or message content."""
+    if not search:
+        return list_conversations(db_path)
+    like = f"%{search.lower()}%"
+    with closing(_get_conn(db_path)) as conn:
+        rows = conn.execute(
+            """
+            SELECT DISTINCT c.thread_id, c.title
+            FROM conversations c
+            LEFT JOIN messages m ON c.thread_id = m.thread_id
+            WHERE LOWER(COALESCE(c.title, '')) LIKE ? OR LOWER(m.content) LIKE ?
+            ORDER BY c.updated_at DESC
+            """,
+            (like, like),
+        ).fetchall()
+    return [(row["thread_id"], row["title"] or "") for row in rows]
+
+
 def delete_conversation(thread_id: str, db_path: str = DB_PATH) -> None:
     """Remove a conversation and its messages."""
     with closing(_get_conn(db_path)) as conn, conn:
