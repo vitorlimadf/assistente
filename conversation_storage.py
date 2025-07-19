@@ -101,3 +101,19 @@ def list_conversations(db_path: str = DB_PATH) -> List[Tuple[str, str]]:
             "SELECT thread_id, title FROM conversations ORDER BY updated_at DESC"
         ).fetchall()
     return [(row["thread_id"], row["title"] or "") for row in rows]
+
+
+def delete_conversation(thread_id: str, db_path: str = DB_PATH) -> None:
+    """Remove a conversation and its messages."""
+    with closing(_get_conn(db_path)) as conn, conn:
+        conn.execute("DELETE FROM messages WHERE thread_id=?", (thread_id,))
+        conn.execute("DELETE FROM conversations WHERE thread_id=?", (thread_id,))
+
+
+def rename_conversation(thread_id: str, new_title: str, db_path: str = DB_PATH) -> None:
+    """Change the title of a stored conversation."""
+    with closing(_get_conn(db_path)) as conn, conn:
+        conn.execute(
+            "UPDATE conversations SET title=?, updated_at=? WHERE thread_id=?",
+            (new_title, datetime.now().isoformat(), thread_id),
+        )

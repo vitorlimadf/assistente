@@ -4,6 +4,8 @@ from conversation_storage import (
     save_conversation,
     load_conversation,
     list_conversations,
+    delete_conversation,
+    rename_conversation,
 )
 import asyncio
 
@@ -29,9 +31,12 @@ if "title" not in st.session_state:
 with st.sidebar:
     st.header("Conversas")
     search = st.text_input("Buscar")
-    for tid, title in list_conversations():
-        if search and search.lower() not in (title or "").lower():
-            continue
+    convs = [
+        (tid, title)
+        for tid, title in list_conversations()
+        if not search or search.lower() in (title or "").lower()
+    ]
+    for tid, title in convs:
         label = title if title else tid[:8]
         if st.button(label, key=f"conv-{tid}"):
             st.session_state.messages = load_conversation(tid)
@@ -44,6 +49,27 @@ with st.sidebar:
         st.session_state.uid = generate_thread_id()
         st.session_state.title = None
         st.rerun()
+
+    st.divider()
+    if convs:
+        options = {f"{title or tid[:8]} ({tid[:8]})": tid for tid, title in convs}
+        label = st.selectbox("Selecionar para editar", [""] + list(options.keys()))
+        if label:
+            tid = options[label]
+            new_title = st.text_input("Novo título", key=f"rename-{tid}")
+            cols = st.columns(2)
+            if cols[0].button("Renomear", key=f"btn-rename-{tid}") and new_title:
+                rename_conversation(tid, new_title)
+                if st.session_state.uid == tid:
+                    st.session_state.title = new_title
+                st.rerun()
+            if cols[1].button("Excluir", key=f"btn-del-{tid}"):
+                delete_conversation(tid)
+                if st.session_state.uid == tid:
+                    st.session_state.messages = []
+                    st.session_state.uid = generate_thread_id()
+                    st.session_state.title = None
+                st.rerun()
 
 
 def print_sources(sources):
