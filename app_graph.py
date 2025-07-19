@@ -143,30 +143,38 @@ for message in st.session_state.messages:
 
 components.html(
     """
-    <button id='voice-btn'>🎤 Perguntar por voz</button>
     <script>
-    const btn = document.getElementById('voice-btn');
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-        const recog = new SpeechRecognition();
-        recog.lang = 'pt-BR';
-        btn.onclick = () => recog.start();
-        recog.onresult = (e) => {
-            const text = e.results[0][0].transcript;
-            const input = parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
-            if (input) {
+    function addMicButton() {
+        const input = parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
+        if (!input) { setTimeout(addMicButton, 500); return; }
+        const sendBtn = input.parentElement.querySelector('button');
+        if (!sendBtn || parent.document.getElementById('mic-btn')) return;
+        const micBtn = document.createElement('button');
+        micBtn.id = 'mic-btn';
+        micBtn.type = 'button';
+        micBtn.textContent = '🎤';
+        micBtn.style.marginLeft = '0.25rem';
+        sendBtn.parentElement.insertBefore(micBtn, sendBtn);
+        if (SpeechRecognition) {
+            const recog = new SpeechRecognition();
+            recog.lang = 'pt-BR';
+            micBtn.onclick = () => recog.start();
+            recog.onresult = (e) => {
+                const text = e.results[0][0].transcript;
                 const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value').set;
                 setter.call(input, input.value + text);
                 input.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-        };
-    } else {
-        btn.disabled = true;
-        btn.innerText = 'Sem suporte de voz';
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+            };
+        } else {
+            micBtn.disabled = true;
+        }
     }
+    addMicButton();
     </script>
     """,
-    height=40,
+    height=0,
 )
 
 if prompt := st.chat_input("De que você precisa?"):
