@@ -51,8 +51,6 @@ async def websocket_endpoint(websocket: WebSocket):
         pass
 
 
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
-
 
 @app.get("/api/conversations")
 def api_list_conversations(search: str = ""):
@@ -74,3 +72,7 @@ def api_rename_conversation(thread_id: str, data: dict):
 def api_delete_conversation(thread_id: str):
     delete_conversation(thread_id)
     return {"status": "ok"}
+
+
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+
