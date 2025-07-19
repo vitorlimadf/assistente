@@ -136,17 +136,20 @@ function ChatApp() {
           )
         ),
         React.createElement('div', { className: 'input-area' },
-          React.createElement('button', {
-            className: 'mic',
-            onClick: startVoice
-          }, recording ? '◼' : '🎤'),
-          React.createElement('input', {
-            value: input,
-            onChange: e => setInput(e.target.value),
-            placeholder: 'Digite sua mensagem...',
-            onKeyDown: e => { if (e.key === 'Enter') send(); }
-          }),
-          React.createElement('button', { onClick: () => send() }, 'Enviar')
+          React.createElement('div', { className: 'input-wrapper' },
+            React.createElement('button', {
+              className: 'icon-mic',
+              onClick: startVoice
+            }, recording ? '◼' : React.createElement('i', { className: 'fas fa-microphone' })),
+            React.createElement('input', {
+              value: input,
+              onChange: e => setInput(e.target.value),
+              placeholder: 'Digite sua mensagem...',
+              onKeyDown: e => { if (e.key === 'Enter') send(); }
+            }),
+            React.createElement('button', { className: 'icon-send', onClick: () => send() },
+              React.createElement('i', { className: 'fas fa-paper-plane' }))
+          )
         )
       )
     )
