@@ -1,5 +1,9 @@
 import streamlit as st
-from agente_graph import generate_thread_id, chatbot, generate_conversation_title
+from agente_graph import (
+    generate_thread_id,
+    chatbot,
+    generate_conversation_title,
+)
 from conversation_storage import (
     save_conversation,
     load_conversation,
@@ -36,16 +40,30 @@ with st.sidebar:
         for tid, title in list_conversations()
         if not search or search.lower() in (title or "").lower()
     ]
+    st.markdown(
+        """
+        <style>
+        .conv-row div[data-testid="column"] {padding: 0 !important;}
+        .conv-row button {border-radius: 0;}
+        .conv-row button:first-child {border-top-left-radius: 0.5rem;border-bottom-left-radius: 0.5rem;}
+        .conv-row button:last-child {border-top-right-radius: 0.5rem;border-bottom-right-radius: 0.5rem;width: 2.5rem;}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
     for tid, title in convs:
-        cols = st.columns([0.9, 0.1])
+        st.markdown("<div class='conv-row'>", unsafe_allow_html=True)
+        row = st.columns([0.88, 0.12], gap="0")
         label = title if title else tid[:8]
-        if cols[0].button(label, key=f"conv-{tid}", use_container_width=True):
+        if row[0].button(label, key=f"conv-{tid}", use_container_width=True):
             st.session_state.messages = load_conversation(tid)
             st.session_state.uid = tid
             st.session_state.title = title
             st.rerun()
-        with cols[1].popover("\u22ee"):
-            new_title = st.text_input("Novo título", value=title or "", key=f"rename-{tid}")
+        with row[1].popover("\u22ee", key=f"menu-{tid}"):
+            new_title = st.text_input(
+                "Novo título", value=title or "", key=f"rename-{tid}"
+            )
             if st.button("Renomear", key=f"btn-rename-{tid}") and new_title:
                 rename_conversation(tid, new_title)
                 if st.session_state.uid == tid:
@@ -58,6 +76,7 @@ with st.sidebar:
                     st.session_state.uid = generate_thread_id()
                     st.session_state.title = None
                 st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
     st.divider()
     if st.button("Nova conversa"):
@@ -69,7 +88,10 @@ with st.sidebar:
 
 def print_sources(sources):
     if sources:
-        with st.expander("_**FONTES** e respectivas relevâncias (range % não limitado):_", expanded=False):
+        with st.expander(
+            "_**FONTES** e respectivas relevâncias (range % não limitado):_",
+            expanded=False,
+        ):
             st.json(sources, expanded=True)
 
 
@@ -81,10 +103,10 @@ for message in st.session_state.messages:
         print_sources(sources)
 
 if prompt := st.chat_input("De que você precisa?"):
-    #user_details = get_authenticated_user_details()
-    #user_name = user_details.get("user_name")
-    #print(f"tipo da variavel: {type(user_name)}")
-    #print(user_name)
+    # user_details = get_authenticated_user_details()
+    # user_name = user_details.get("user_name")
+    # print(f"tipo da variavel: {type(user_name)}")
+    # print(user_name)
 
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
@@ -95,21 +117,18 @@ if prompt := st.chat_input("De que você precisa?"):
             {"role": m["role"], "content": m["content"]}
             for m in st.session_state.messages
         ]
-        #if userobj not in locals() :
+        # if userobj not in locals() :
         #    userobj = get_authenticated_user_details
 
-        
-
-        #print("messages")
-        #print(messages)
+        # print("messages")
+        # print(messages)
         message_stream = chatbot(messages[-1], thread_id=st.session_state.uid)
-        
 
-        #print("message_stream")
-        #print(message_stream)
-    
+        # print("message_stream")
+        # print(message_stream)
+
         sources = []
-        text_response = ''
+        text_response = ""
         response_container = st.empty()
 
         for chunk in message_stream:
@@ -121,9 +140,13 @@ if prompt := st.chat_input("De que você precisa?"):
 
     #    print_sources(sources)
 
-    st.session_state.messages.append({"role": "assistant", "content": text_response, "sources": sources})
+    st.session_state.messages.append(
+        {"role": "assistant", "content": text_response, "sources": sources}
+    )
     if st.session_state.title is None and len(st.session_state.messages) >= 2:
-        st.session_state.title = generate_conversation_title(st.session_state.messages)
+        st.session_state.title = generate_conversation_title(
+            st.session_state.messages
+        )
     save_conversation(
         st.session_state.uid,
         st.session_state.messages,
