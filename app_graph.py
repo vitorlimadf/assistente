@@ -155,9 +155,9 @@ components.html(
             const text = e.results[0][0].transcript;
             const input = parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
             if (input) {
-                input.value += text;
+                const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value').set;
+                setter.call(input, input.value + text);
                 input.dispatchEvent(new Event('input', { bubbles: true }));
-                input.dispatchEvent(new Event('change', { bubbles: true }));
             }
         };
     } else {
