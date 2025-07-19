@@ -51,6 +51,12 @@ with st.sidebar:
         """,
         unsafe_allow_html=True,
     )
+
+    if "open_menu" not in st.session_state:
+        st.session_state.open_menu = None
+    if "menu_action" not in st.session_state:
+        st.session_state.menu_action = None
+
     for tid, title in convs:
         st.markdown("<div class='conv-row'>", unsafe_allow_html=True)
         row = st.columns([0.88, 0.12], gap="0")
@@ -59,23 +65,54 @@ with st.sidebar:
             st.session_state.messages = load_conversation(tid)
             st.session_state.uid = tid
             st.session_state.title = title
+            st.session_state.open_menu = None
+            st.session_state.menu_action = None
             st.rerun()
-        with row[1].popover("\u22ee", key=f"menu-{tid}"):
-            new_title = st.text_input(
-                "Novo título", value=title or "", key=f"rename-{tid}"
-            )
-            if st.button("Renomear", key=f"btn-rename-{tid}") and new_title:
-                rename_conversation(tid, new_title)
-                if st.session_state.uid == tid:
-                    st.session_state.title = new_title
-                st.rerun()
-            if st.button("Excluir", key=f"btn-del-{tid}"):
-                delete_conversation(tid)
-                if st.session_state.uid == tid:
-                    st.session_state.messages = []
-                    st.session_state.uid = generate_thread_id()
-                    st.session_state.title = None
-                st.rerun()
+
+        if row[1].button("\u22ee", key=f"btn-menu-{tid}"):
+            if st.session_state.open_menu == tid:
+                st.session_state.open_menu = None
+                st.session_state.menu_action = None
+            else:
+                st.session_state.open_menu = tid
+                st.session_state.menu_action = None
+
+        if st.session_state.open_menu == tid:
+            action = st.session_state.menu_action
+            if action is None:
+                col_ren, col_del = st.columns(2)
+                if col_ren.button("Renomear", key=f"opt-rename-{tid}"):
+                    st.session_state.menu_action = "rename"
+                if col_del.button("Excluir", key=f"opt-del-{tid}"):
+                    st.session_state.menu_action = "delete"
+            elif action == "rename":
+                new_title = st.text_input(
+                    "Novo título", value=title or "", key=f"rename-{tid}"
+                )
+                col_save, col_cancel = st.columns(2)
+                if col_save.button("Salvar", key=f"btn-save-{tid}") and new_title:
+                    rename_conversation(tid, new_title)
+                    if st.session_state.uid == tid:
+                        st.session_state.title = new_title
+                    st.session_state.open_menu = None
+                    st.session_state.menu_action = None
+                    st.rerun()
+                if col_cancel.button("Cancelar", key=f"btn-cancel-{tid}"):
+                    st.session_state.menu_action = None
+            elif action == "delete":
+                st.warning("Confirmar exclusão?")
+                col_yes, col_no = st.columns(2)
+                if col_yes.button("Confirmar", key=f"btn-conf-{tid}"):
+                    delete_conversation(tid)
+                    if st.session_state.uid == tid:
+                        st.session_state.messages = []
+                        st.session_state.uid = generate_thread_id()
+                        st.session_state.title = None
+                    st.session_state.open_menu = None
+                    st.session_state.menu_action = None
+                    st.rerun()
+                if col_no.button("Cancelar", key=f"btn-no-{tid}"):
+                    st.session_state.menu_action = None
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.divider()
