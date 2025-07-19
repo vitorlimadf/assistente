@@ -10,6 +10,7 @@ from conversation_storage import (
     list_conversations,
     delete_conversation,
     rename_conversation,
+    search_conversations,
 )
 import asyncio
 
@@ -35,11 +36,10 @@ if "title" not in st.session_state:
 with st.sidebar:
     st.header("Conversas")
     search = st.text_input("Buscar")
-    convs = [
-        (tid, title)
-        for tid, title in list_conversations()
-        if not search or search.lower() in (title or "").lower()
-    ]
+    if search:
+        convs = search_conversations(search)
+    else:
+        convs = list_conversations()
     st.markdown(
         """
         <style>
