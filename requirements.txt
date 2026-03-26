@@ -43,7 +43,7 @@ langgraph-prebuilt==0.1.8
 langgraph-sdk==0.1.61
 langsmith==0.3.29
 MarkupSafe==3.0.2
-marshmallow==3.26.1
+marshmallow==3.26.2
 msal==1.32.0
 multidict==6.4.2
 mypy-extensions==1.0.0
